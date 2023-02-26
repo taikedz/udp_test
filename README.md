@@ -14,24 +14,18 @@ that response to be valid anymore based on time.
 
 The other exercise I wanted to attempt was NAT traversal. To mock this out, I run the client from within a docker container:
 
-The Dockerfile (replacing `<HOST IP>` with the IP of my machine):
-
-```Dockerfile
-FROM ubuntu:22.04
-RUN apt-get update && apt-get install -y python3 busybox
-ADD udp_test.py /udp_test.py
-
-CMD python3 /udp_test.py client <HOST IP>
-```
-
-The test:
-
 ```sh
-docker build -t nattest:latest .
-docker run -d --rm --name=nattest_container nattest:latest
+# Terminal Session 1
 python3 udp_test.py server
+
+
+# Terminal Session 2
+docker build -t nattest:latest .
+docker run -d --rm --name=nattest_container nattest:latest client <HOST IP>
+# see the server is responding
 docker stop nattest_container
 ```
 
 The server responds successfully to the client (with the appropriate firewall port opened!).
 
+What I want to futher test is, if the server delays more than N seconds, is there an eventual a NAT response failure (client no longer sees the response)?
